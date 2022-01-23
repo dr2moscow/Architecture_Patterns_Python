@@ -20,7 +20,7 @@ class Other:
 
     def __call__(self, request):
         print(request)
-        return '200 OK', [b'<h1>other</h1>']
+        return '200 OK', [b'<h1>other </h1>']
 
 
 routes = {

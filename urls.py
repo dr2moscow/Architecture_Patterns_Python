@@ -1,6 +1,5 @@
 from datetime import date
-from views import Index, About, Contact
-
+from views import Index, Contact, About
 
 # front controller
 def secret_front(request):

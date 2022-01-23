@@ -1,5 +1,5 @@
-from framework.templator import render
 from catalog import flowers
+from framework.templator import render
 
 
 class Index:
