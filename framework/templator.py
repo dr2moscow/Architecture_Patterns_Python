@@ -7,7 +7,7 @@ def render(template_name, folder='templates', **kwargs):
     Минимальный пример работы с шаблонизатором
     :param template_name: имя шаблона
     :param folder: папка в которой ищем шаблон
-    :param kwargs: параметры для передачи в шаблон
+    :param kwargs: параметры для передачи  в шаблон
     :return:
     """
     # Открываем шаблон по имени
