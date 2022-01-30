@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8 " />
+    <meta charset="UTF-8">
+    {% block style %}{% endblock %}
+</head>j
+<body>
+    <div id="main">
+    <div id="header">
+     <!-- class="logo_colour", allows you to change the colour of the text -->
+      <div id="logo">
+        <h1><a href="/">Flower<span class="logo_colour">Butik</span></a></h1>
+      </div>
+    <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+      <div id="menubar">
+        {% block menu %}
+          {% include "inc-menu.html" %}
+        {% endblock %}
+      </div>
+    </div>
+    <div id="site_content">
+      <div class="sidebar">
+        <!-- include Latest news -->
+        {% block news %}
+          {% include "inc-news.html" %}
+        {% endblock %}
+        <!-- include Useful Links -->
+        {% block links %}
+          {% include "inc-links.html" %}
+        {% endblock %}
+        <!-- include Search -->
+        {% block search %}
+          {% include "inc-search.html" %}
+        {% endblock %}
+      </div>
+      <div id="content">
+        <!-- include Content-->
+        {% block body %}
+          {% include "inc-index-body.html" %}
+        {% endblock %}
+      </div>
+    </div>
+    <div id="footer">
+      <!-- include Footer-->
+        {% block footer %}
+          {% include "inc-footer.html" %}
+        {% endblock %}
+    </div>
+  </div>
+</body>
+</html>

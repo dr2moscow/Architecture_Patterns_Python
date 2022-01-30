@@ -1,0 +1,7 @@
+<h1>Welcome to Flower Butik in Moscow</h1>
+<p>Today ({{date}}) in our catalog are the freshest flowers:</p>
+<ul>
+    {% for flowers in flowers %}
+    <li>{{ flowers.name }}, {{ flowers.color }}</li>
+    {% endfor %}
+</ul>
