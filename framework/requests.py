@@ -1,4 +1,3 @@
-# get requests
 class GetRequests:
 
     @staticmethod
