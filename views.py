@@ -15,7 +15,7 @@ class Index:
 
 
 class About:
-    # Просто возвращаем текст
+    # Возвращаем разделы каталога
     def __call__(self, request):
         return '200 OK', render('about.html', objects_list=site.categories, select_menu2='selected', date=request.get('date', None))
 
@@ -32,28 +32,29 @@ class NotFound404:
         return '404 WHAT', '404 PAGE Not Found'
 
 
-# контроллер - Расписания
-class StudyPrograms:
+# контроллер - букеты
+class Bouquets:
     def __call__(self, request):
-        return '200 OK', render('study-programs.html', date=date.today())
+        return '200 OK', render('bouquets.html', select_menu2='selected', date=date.today())
 
 
-# контроллер - список курсов
-class CoursesList:
+# контроллер - список букетов
+class BouquetList:
     def __call__(self, request):
-        logger.log('Список курсов')
+        logger.log('Список букетов')
+
         try:
             category = site.find_category_by_id(
                 int(request['request_params']['id']))
-            return '200 OK', render('course_list.html',
-                                    objects_list=category.courses,
-                                    name=category.name, id=category.id)
+            return '200 OK', render('bouquet_list.html',
+                                    objects_list=category.bouquets, select_menu2='selected',
+                                    name=category.name, id=category.id, date=date.today())
         except KeyError:
-            return '200 OK', 'No courses have been added yet'
+            return '200 OK', 'No bouquets have been added yet'
 
 
-# контроллер - создать курс
-class CreateCourse:
+# контроллер - создать букет
+class CreateBouquet:
     category_id = -1
 
     def __call__(self, request):
@@ -68,22 +69,22 @@ class CreateCourse:
             if self.category_id != -1:
                 category = site.find_category_by_id(int(self.category_id))
 
-                course = site.create_course('record', name, category)
-                site.courses.append(course)
+                bouquet = site.create_bouquet('record', name, category)
+                site.bouquets.append(bouquet)
 
-            return '200 OK', render('course_list.html',
-                                    objects_list=category.courses,
+            return '200 OK', render('bouquet_list.html',
+                                    objects_list=category.bouquets, select_menu2='selected',
                                     name=category.name,
-                                    id=category.id)
+                                    id=category.id, date=date.today())
 
         else:
             try:
                 self.category_id = int(request['request_params']['id'])
                 category = site.find_category_by_id(int(self.category_id))
 
-                return '200 OK', render('create_course.html',
+                return '200 OK', render('create_bouquet.html', select_menu2='selected',
                                         name=category.name,
-                                        id=category.id)
+                                        id=category.id, date=date.today())
             except KeyError:
                 return '200 OK', 'No categories have been added yet'
 
@@ -92,7 +93,6 @@ class CreateCourse:
 class CreateCategory:
     def __call__(self, request):
 
-        print(request)
         if request['method'] == 'POST':
             # метод пост
 
@@ -111,36 +111,38 @@ class CreateCategory:
 
             site.categories.append(new_category)
 
-            return '200 OK', render('about.html', objects_list=site.categories)
+            return '200 OK', render('about.html', objects_list=site.categories, select_menu2='selected',
+                                    date=date.today())
         else:
             categories = site.categories
-            return '200 OK', render('create_category.html',
-                                    categories=categories)
+            return '200 OK', render('create_category.html', select_menu2='selected',
+                                    categories=categories, date=date.today())
 
 
 # контроллер - список категорий
 class CategoryList:
     def __call__(self, request):
         logger.log('Список категорий')
-        return '200 OK', render('category_list.html',
-                                objects_list=site.categories)
+        return '200 OK', render('category_list.html', select_menu2='selected',
+                                objects_list=site.categories, date=date.today())
 
 
-# контроллер - копировать курс
-class CopyCourse:
+# контроллер - копировать букет
+class CopyBouquet:
     def __call__(self, request):
         request_params = request['request_params']
 
         try:
             name = request_params['name']
 
-            old_course = site.get_course(name)
-            if old_course:
-                new_name = f'copy_{name}'
-                new_course = old_course.clone()
-                new_course.name = new_name
-                site.courses.append(new_course)
+            old_bouquet = site.get_bouquet(name)
+            if old_bouquet:
+                new_name = f'{name}_copy'
+                new_bouquet = old_bouquet.clone()
+                new_bouquet.name = new_name
+                site.bouquets.append(new_bouquet)
 
-            return '200 OK', render('course_list.html', objects_list=site.courses, name=new_course.category.name)
+            return '200 OK', render('bouquet_list.html', objects_list=site.bouquets,
+                                    name=new_bouquet.category.name, date=date.today())
         except KeyError:
-            return '200 OK', 'No courses have been added yet'
+            return '200 OK', 'No bouquets have been added yet'

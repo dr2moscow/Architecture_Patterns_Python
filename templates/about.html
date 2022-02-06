@@ -19,14 +19,14 @@
 {% endblock %}
 {% block body %}
 	<div>
-		<a href="/create-category/">Создать новую категорию</a>
+		<a href="/create-category/">Создать новую категорию каталога</a>
 	</div>
 	<div>
-		<h1>Список существующих категорий</h1>
+		<h1>Список категорий в каталоге</h1>
         {% for item in objects_list %}
         <li>
-            {{item.name}} <span>Количество курсов: {{item.course_count()}}</span>
-			<a href="courses-list/?id={{item.id}}">Показать курсы</a>
+            {{item.name}} <span>,количество букетов: {{item.bouquet_count()}}</span>
+			<a href="/bouquet-list/?id={{item.id}}">Показать букеты</a>
         </li>
         {% endfor %}
 	</div>

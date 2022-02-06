@@ -1,5 +1,9 @@
-<h1>Useful Links</h1>
-<ul>
-    <li><a href="#">link 1</a></li>
-    <li><a href="#">link 2</a></li>
-</ul>
+<h1>Каталог</h1>
+
+    <ul>
+        {% for item in objects_list %}
+        <li>
+            <a href="/bouquet-list/?id={{item.id}}">{{item.name}}</a>
+        </li>
+        {% endfor %}
+    </ul>

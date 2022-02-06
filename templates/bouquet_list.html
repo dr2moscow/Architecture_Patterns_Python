@@ -10,19 +10,19 @@
 {% endblock %}
 {% block body %}
     <div>
-        <a href="/">назад на главную</a>
+        <a href="/about/">назад в каталог</a>
     </div>
 
     <br>
     <br>
 
     <div>
-        <a href="/create-course/?id={{id}}">Создать новый курс</a>
+        <a href="/create-bouquet/?id={{id}}">Создать новый букет</a>
         <br>
-        <h1>Список курсов для категории "{{name}}"</h1>
+        <h1>Букеты в категории "{{name}}"</h1>
         {% for item in objects_list %}
         <li>
-            {{item.name}} <span><a href="/copy-course/?name={{item.name}}">скопировать</a></span>
+            {{item.name}} <span><a href="/copy-bouquet/?name={{item.name}}">скопировать</a></span>
         </li>
         {% endfor %}
     </div>

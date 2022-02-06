@@ -7,20 +7,14 @@ class User:
     pass
 
 
-# преподаватель
-class Teacher(User):
-    pass
-
-
-# студент
-class Student(User):
+# цветок
+class Flower(User):
     pass
 
 
 class UserFactory:
     types = {
-        'student': Student,
-        'teacher': Teacher
+        'flower': Flower
     }
 
     # порождающий паттерн Фабричный метод
@@ -30,35 +24,35 @@ class UserFactory:
 
 
 # порождающий паттерн Прототип
-class CoursePrototype:
-    # прототип курсов обучения
+class BouquetPrototype:
+    # прототип букетов
 
     def clone(self):
         return deepcopy(self)
 
 
-class Course(CoursePrototype):
+class Bouquet(BouquetPrototype):
 
     def __init__(self, name, category):
         self.name = name
         self.category = category
-        self.category.courses.append(self)
+        self.category.bouquets.append(self)
 
 
-# интерактивный курс
-class InteractiveCourse(Course):
+# интерактивный букет
+class InteractiveBouquet(Bouquet):
     pass
 
 
-# курс в записи
-class RecordCourse(Course):
+# букет в записи
+class RecordBouquet(Bouquet):
     pass
 
 
-class CourseFactory:
+class BouquetFactory:
     types = {
-        'interactive': InteractiveCourse,
-        'record': RecordCourse
+        'interactive': InteractiveBouquet,
+        'record': RecordBouquet
     }
 
     # порождающий паттерн Фабричный метод
@@ -76,21 +70,20 @@ class Category:
         Category.auto_id += 1
         self.name = name
         self.category = category
-        self.courses = []
+        self.bouquets = []
 
-    def course_count(self):
-        result = len(self.courses)
+    def bouquet_count(self):
+        result = len(self.bouquets)
         if self.category:
-            result += self.category.course_count()
+            result += self.category.bouquet_count()
         return result
 
 
 # основной интерфейс проекта
 class Engine:
     def __init__(self):
-        self.teachers = []
-        self.students = []
-        self.courses = []
+        self.flowers = []
+        self.bouquets = []
         self.categories = []
 
     @staticmethod
@@ -109,11 +102,11 @@ class Engine:
         raise Exception(f'Нет категории с id = {id}')
 
     @staticmethod
-    def create_course(type_, name, category):
-        return CourseFactory.create(type_, name, category)
+    def create_bouquet(type_, name, category):
+        return BouquetFactory.create(type_, name, category)
 
-    def get_course(self, name):
-        for item in self.courses:
+    def get_bouquet(self, name):
+        for item in self.bouquets:
             if item.name == name:
                 return item
         return None
