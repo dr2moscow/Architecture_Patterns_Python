@@ -55,7 +55,9 @@ class Contact:
 
 # контроллер 404
 class NotFound404:
+    @Debug(name='404')
     def __call__(self, request):
+        logger.log('404 PAGE Not Found')
         return '404 WHAT', '404 PAGE Not Found'
 
 

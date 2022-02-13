@@ -6,7 +6,7 @@ class UnitOfWork:
     """
     Паттерн UNIT OF WORK
     """
-    # Работает с конкретным потоком
+    # Работает с конкретным  потоком
     current = local()
 
     def __init__(self):

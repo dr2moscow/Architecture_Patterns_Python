@@ -1,8 +1,8 @@
 from copy import deepcopy
 from quopri import decodestring
 from sqlite3 import connect
-from patterns.behavioral_patterns import FileWriter, Subject
 from patterns.architectural_system_pattern_unit_of_work import DomainObject
+from patterns.behavioral_patterns import FileWriter, Subject
 
 
 # абстрактный пользователь
@@ -90,6 +90,10 @@ class Category:
             result += self.category.bouquet_count()
         return result
 
+    @classmethod
+    def create(cls, name, category):
+        return cls.name(category)
+
 
 # порождающий паттерн Абстрактная фабрика
 class BouquetFactory:
@@ -102,7 +106,6 @@ class BouquetFactory:
     @classmethod
     def create(cls, type_, name, category):
         return cls.types[type_](name, category)
-
 
 
 # основной интерфейс проекта
@@ -246,7 +249,6 @@ connection = connect('patterns.sqlite')
 class MapperRegistry:
     mappers = {
         'buyer': BuyerMapper,
-        #'category': CategoryMapper
     }
 
     @staticmethod
