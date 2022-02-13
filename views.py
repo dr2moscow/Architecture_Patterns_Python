@@ -3,10 +3,11 @@ from catalog import flowers
 from framework.templator import render
 from patterns.сreational_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
-from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, ListView, CreateView, BaseSerializer
+from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, ListView, CreateView, \
+    BaseSerializer, FileWriter
 
 site = Engine()
-logger = Logger('main')
+logger = Logger('main', FileWriter())
 email_notifier = EmailNotifier()
 sms_notifier = SmsNotifier()
 

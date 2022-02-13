@@ -91,13 +91,10 @@ class CreateView(TemplateView):
             return super().__call__(request)
 
 
-# поведенческий паттерн - Стратегия
-def write(text):
-    print(text)
-
-
 class ConsoleWriter:
-    pass
+
+    def write(self, text):
+        print(text)
 
 
 class FileWriter:
