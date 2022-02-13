@@ -1,15 +1,18 @@
 from datetime import date
 from catalog import flowers
 from framework.templator import render
-from patterns.сreational_patterns import Engine, Logger
+from patterns.сreational_patterns import Engine, Logger, MapperRegistry
 from patterns.structural_patterns import AppRoute, Debug
 from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, ListView, CreateView, \
     BaseSerializer, FileWriter
+from patterns.architectural_system_pattern_unit_of_work import UnitOfWork
 
 site = Engine()
 logger = Logger('main', FileWriter())
 email_notifier = EmailNotifier()
 sms_notifier = SmsNotifier()
+UnitOfWork.new_current()
+UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 routes = {}
 
@@ -34,7 +37,7 @@ class Catalog:
 
 # контроллер "Покупатели"
 @AppRoute(routes=routes, url='/buyers/')
-class Catalog:
+class Buyers:
     @Debug(name='Buyers')
     def __call__(self, request):
         return '200 OK', render('buyers.html',  objects_list=site.categories, select_menu2='selected',
@@ -184,9 +187,11 @@ class CopyBouquet:
 
 @AppRoute(routes=routes, url='/buyers-list/')
 class BuyerListView(ListView):
-    queryset = site.buyers
-    logger.log('Список покупателей')
-    template_name = 'buyers-list.html'
+    template_name = 'buyers_list.html'
+
+    def get_queryset(self):
+        mapper = MapperRegistry.get_current_mapper('buyer')
+        return mapper.all()
 
 
 @AppRoute(routes=routes, url='/create-buyer/')
@@ -198,6 +203,8 @@ class BuyerCreateView(CreateView):
         name = site.decode_value(name)
         new_obj = site.create_user('buyer', name)
         site.buyers.append(new_obj)
+        new_obj.mark_new()
+        UnitOfWork.get_current().commit()
 
 
 @AppRoute(routes=routes, url='/add-buyer/')
