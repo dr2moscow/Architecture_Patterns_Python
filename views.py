@@ -64,6 +64,7 @@ class Bouquets:
 # контроллер - список букетов
 @AppRoute(routes=routes, url='/bouquet-list/')
 class BouquetList:
+    @Debug(name='BouquetList')
     def __call__(self, request):
         logger.log('Список букетов')
 
@@ -183,6 +184,7 @@ class CopyBouquet:
 @AppRoute(routes=routes, url='/buyers-list/')
 class BuyerListView(ListView):
     queryset = site.buyers
+    logger.log('Список покупателей')
     template_name = 'buyers-list.html'
 
 
@@ -222,4 +224,5 @@ class AddBuyerByBouquetCreateView(CreateView):
 class BouquetApi:
     @Debug(name='BouquetApi')
     def __call__(self, request):
-        return '200 OK', BaseSerializer(site.bouquet).save()
+        logger.log('Вызов API')
+        return '200 OK', BaseSerializer(site.bouquets).save()

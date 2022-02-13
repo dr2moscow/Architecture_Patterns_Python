@@ -174,6 +174,11 @@ class Logger(metaclass=SingletonByName):
         self.name = name
         self.writer = writer
 
-    def log(self, text):
+    def log(self, text: object) -> object:
+        """
+        Логируем действия
+
+        :rtype: object
+        """
         text = f'log---> {text}'
         self.writer.write(text)
