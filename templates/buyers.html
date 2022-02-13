@@ -18,17 +18,16 @@
 	{% include "inc-search.html" %}
 {% endblock %}
 {% block body %}
-	<div>
-		<a href="/create-category/">Создать новую категорию каталога</a>
-	</div>
-	<div>
-		<h1>Список категорий в каталоге</h1>
-        {% for item in objects_list %}
-        <li>
-            {{item.name}} <span>,количество букетов: {{item.bouquet_count()}}</span>
-			<a href="/bouquet-list/?id={{item.id}}">Показать букеты</a>
-        </li>
-        {% endfor %}
+    <div>
+		<li>
+			<a href="/buyers-list/">Список покупателей</a>
+		</li>
+		<li>
+			<a href="/create-buyer/">Новый покупатель</a>
+		</li>
+		<li>
+			<a href="/add-buyer/">Выбрать букет для покупателя</a>
+		</li>
 	</div>
 {% endblock %}
 {% block footer %}

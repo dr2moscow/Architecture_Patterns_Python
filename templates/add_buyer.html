@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}
+	Flower Butik
+{% endblock %}
+{% block style %}
+	{% include "inc-style.html" %}
+{% endblock %}
+{% block menu %}
+	{% include "inc-menu.html" %}
+{% endblock %}
+{% block news %}
+	{% include "inc-news.html" %}
+{% endblock %}
+{% block links %}
+	{% include "inc-links.html" %}
+{% endblock %}
+{% block search %}
+	{% include "inc-search.html" %}
+{% endblock %}
+{% block body %}
+	<div>
+		<li>
+			<a href="/buyers-list/">Список покупателей</a>
+		</li>
+		<li>
+			<a href="/create-buyer/">Новый покупатель</a>
+		</li>
+	</div>
+    <h1>Добавление покупателю букет</h1>
+    <form method="post">
+        <select size="3" name="bouquet_name">
+            {% for item in bouquets %}
+            <option value="{{item.name}}">{{item.name}}</option>
+            {% endfor %}
+        </select>
+        <select size="3" name="buyer_name">
+            {% for item in buyers %}
+            <option value="{{item.name}}">{{item.name}}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Сохранить</button>
+    </form>
+{% endblock %}
+{% block footer %}
+	{% include "inc-footer.html" %}
+{% endblock %}

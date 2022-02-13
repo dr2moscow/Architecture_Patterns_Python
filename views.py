@@ -2,32 +2,55 @@ from datetime import date
 from catalog import flowers
 from framework.templator import render
 from patterns.сreational_patterns import Engine, Logger
+from patterns.structural_patterns import AppRoute, Debug
+from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, ListView, CreateView, BaseSerializer
 
 site = Engine()
 logger = Logger('main')
+email_notifier = EmailNotifier()
+sms_notifier = SmsNotifier()
+
+routes = {}
 
 
+# контроллер - главная страница
+@AppRoute(routes=routes, url='/')
 class Index:
-    # Просто возвращаем текст
+    @Debug(name='Index')
     def __call__(self, request):
-        return '200 OK', render('index.html', flowers=flowers,
+        return '200 OK', render('index.html', flowers=flowers, objects_list=site.categories,
                                 select_menu1='selected', select_menu='selected', date=request.get('date', None))
 
 
-class About:
-    # Возвращаем разделы каталога
+# контроллер "Каталог"
+@AppRoute(routes=routes, url='/catalog/')
+class Catalog:
+    @Debug(name='Catalog')
     def __call__(self, request):
-        return '200 OK', render('about.html', objects_list=site.categories, select_menu2='selected', date=request.get('date', None))
+        return '200 OK', render('catalog.html',  objects_list=site.categories, select_menu2='selected',
+                                date=request.get('date', None))
 
 
+# контроллер "Покупатели"
+@AppRoute(routes=routes, url='/buyers/')
+class Catalog:
+    @Debug(name='Buyers')
+    def __call__(self, request):
+        return '200 OK', render('buyers.html',  objects_list=site.categories, select_menu2='selected',
+                                date=request.get('date', None))
+
+
+# контроллер "Контакты"
+@AppRoute(routes=routes, url='/contact/')
 class Contact:
-    # Просто возвращаем текст
+    @Debug(name='Contact')
     def __call__(self, request):
-        return '200 OK', render('contact.html', select_menu3='selected', date=request.get('date', None))
+        return '200 OK', render('contact.html',  objects_list=site.categories, select_menu4='selected',
+                                date=request.get('date', None))
 
 
+# контроллер 404
 class NotFound404:
-    # контроллер 404
     def __call__(self, request):
         return '404 WHAT', '404 PAGE Not Found'
 
@@ -35,10 +58,11 @@ class NotFound404:
 # контроллер - букеты
 class Bouquets:
     def __call__(self, request):
-        return '200 OK', render('bouquets.html', select_menu2='selected', date=date.today())
+        return '200 OK', render('catalog.html', select_menu2='selected', date=date.today())
 
 
 # контроллер - список букетов
+@AppRoute(routes=routes, url='/bouquet-list/')
 class BouquetList:
     def __call__(self, request):
         logger.log('Список букетов')
@@ -54,6 +78,7 @@ class BouquetList:
 
 
 # контроллер - создать букет
+@AppRoute(routes=routes, url='/create-bouquet/')
 class CreateBouquet:
     category_id = -1
 
@@ -70,6 +95,10 @@ class CreateBouquet:
                 category = site.find_category_by_id(int(self.category_id))
 
                 bouquet = site.create_bouquet('record', name, category)
+
+                bouquet.observers.append(email_notifier)
+                bouquet.observers.append(sms_notifier)
+
                 site.bouquets.append(bouquet)
 
             return '200 OK', render('bouquet_list.html',
@@ -90,6 +119,7 @@ class CreateBouquet:
 
 
 # контроллер - создать категорию
+@AppRoute(routes=routes, url='/create-category/')
 class CreateCategory:
     def __call__(self, request):
 
@@ -111,7 +141,7 @@ class CreateCategory:
 
             site.categories.append(new_category)
 
-            return '200 OK', render('about.html', objects_list=site.categories, select_menu2='selected',
+            return '200 OK', render('catalog.html', objects_list=site.categories, select_menu2='selected',
                                     date=date.today())
         else:
             categories = site.categories
@@ -120,6 +150,7 @@ class CreateCategory:
 
 
 # контроллер - список категорий
+@AppRoute(routes=routes, url='/category-list/')
 class CategoryList:
     def __call__(self, request):
         logger.log('Список категорий')
@@ -128,6 +159,7 @@ class CategoryList:
 
 
 # контроллер - копировать букет
+@AppRoute(routes=routes, url='/copy-bouquet/')
 class CopyBouquet:
     def __call__(self, request):
         request_params = request['request_params']
@@ -146,3 +178,48 @@ class CopyBouquet:
                                     name=new_bouquet.category.name, date=date.today())
         except KeyError:
             return '200 OK', 'No bouquets have been added yet'
+
+
+@AppRoute(routes=routes, url='/buyers-list/')
+class BuyerListView(ListView):
+    queryset = site.buyers
+    template_name = 'buyers-list.html'
+
+
+@AppRoute(routes=routes, url='/create-buyer/')
+class BuyerCreateView(CreateView):
+    template_name = 'create_buyer.html'
+
+    def create_obj(self, data: dict):
+        name = data['name']
+        name = site.decode_value(name)
+        new_obj = site.create_user('buyer', name)
+        site.buyers.append(new_obj)
+
+
+@AppRoute(routes=routes, url='/add-buyer/')
+class AddBuyerByBouquetCreateView(CreateView):
+    template_name = 'add_buyer.html'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['bouquets'] = site.bouquets
+        context['buyers'] = site.buyers
+        return context
+
+    def create_obj(self, data: dict):
+        bouquet_name = data['bouquet_name']
+        print(bouquet_name)
+        bouquet_name = site.decode_value(bouquet_name)
+        bouquet = site.get_bouquet(bouquet_name)
+        buyer_name = data['buyer_name']
+        buyer_name = site.decode_value(buyer_name)
+        buyer = site.get_buyer(buyer_name)
+        bouquet.add_buyer(buyer)
+
+
+@AppRoute(routes=routes, url='/api/')
+class BouquetApi:
+    @Debug(name='BouquetApi')
+    def __call__(self, request):
+        return '200 OK', BaseSerializer(site.bouquet).save()

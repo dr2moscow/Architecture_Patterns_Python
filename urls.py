@@ -1,6 +1,4 @@
 from datetime import date
-from views import Index, About, Contact, Bouquets, BouquetList, \
-    CreateBouquet, CreateCategory, CategoryList, CopyBouquet
 
 
 # front controller
@@ -13,14 +11,3 @@ def other_front(request):
 
 
 fronts = [secret_front, other_front]
-
-routes = {
-    '/': Index(),
-    '/about/': About(),
-    '/contact/': Contact(),
-    '/bouquet-list/': BouquetList(),
-    '/create-bouquet/': CreateBouquet(),
-    '/create-category/': CreateCategory(),
-    '/category-list/': CategoryList(),
-    '/copy-bouquet/': CopyBouquet()
-}

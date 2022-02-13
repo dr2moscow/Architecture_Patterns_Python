@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}
+	Flower Butik
+{% endblock %}
+{% block style %}
+	{% include "inc-style.html" %}
+{% endblock %}
+{% block menu %}
+	{% include "inc-menu.html" %}
+{% endblock %}
+{% block news %}
+	{% include "inc-news.html" %}
+{% endblock %}
+{% block links %}
+	{% include "inc-links.html" %}
+{% endblock %}
+{% block search %}
+	{% include "inc-search.html" %}
+{% endblock %}
+{% block body %}
+	<div>
+		<li>
+			<a href="/create-buyer/">Новый покупатель</a>
+		</li>
+		<li>
+			<a href="/add-buyer/">Выбрать букет для покупателя</a>
+		</li>
+	</div>
+    <h1>Список покупателей</h1>
+    <div>
+
+        {% for item in objects_list %}
+        <li>
+            {{item.name}}
+            {% for bouquet in item.bouquets %}
+                {{bouquet.name}}
+            {% endfor %}
+        </li>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block footer %}
+	{% include "inc-footer.html" %}
+{% endblock %}

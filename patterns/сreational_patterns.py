@@ -1,10 +1,12 @@
 from copy import deepcopy
 from quopri import decodestring
+from patterns.behavioral_patterns import FileWriter, Subject
 
 
 # абстрактный пользователь
 class User:
-    pass
+    def __init__(self, name):
+        self.name = name
 
 
 # цветок
@@ -12,15 +14,25 @@ class Flower(User):
     pass
 
 
+# покупатель
+class Buyer(User):
+
+    def __init__(self, name):
+        self.bouquets = []
+        super().__init__(name)
+
+
+# порождающий паттерн Абстрактная фабрика - фабрика пользователей
 class UserFactory:
     types = {
+        'buyer': Buyer,
         'flower': Flower
     }
 
     # порождающий паттерн Фабричный метод
     @classmethod
-    def create(cls, type_):
-        return cls.types[type_]()
+    def create(cls, type_, name):
+        return cls.types[type_](name)
 
 
 # порождающий паттерн Прототип
@@ -31,12 +43,22 @@ class BouquetPrototype:
         return deepcopy(self)
 
 
-class Bouquet(BouquetPrototype):
+class Bouquet(BouquetPrototype, Subject):
 
     def __init__(self, name, category):
         self.name = name
         self.category = category
         self.category.bouquets.append(self)
+        self.buyers = []
+        super().__init__()
+
+    def __getitem__(self, item):
+        return self.buyers[item]
+
+    def add_buyer(self, buyer: Buyer):
+        self.buyers.append(buyer)
+        buyer.bouquets.append(self)
+        self.notify()
 
 
 # интерактивный букет
@@ -47,18 +69,6 @@ class InteractiveBouquet(Bouquet):
 # букет в записи
 class RecordBouquet(Bouquet):
     pass
-
-
-class BouquetFactory:
-    types = {
-        'interactive': InteractiveBouquet,
-        'record': RecordBouquet
-    }
-
-    # порождающий паттерн Фабричный метод
-    @classmethod
-    def create(cls, type_, name, category):
-        return cls.types[type_](name, category)
 
 
 # категория
@@ -79,16 +89,31 @@ class Category:
         return result
 
 
+# порождающий паттерн Абстрактная фабрика
+class BouquetFactory:
+    types = {
+        'interactive': InteractiveBouquet,
+        'record': RecordBouquet
+    }
+
+    # порождающий паттерн Фабричный метод
+    @classmethod
+    def create(cls, type_, name, category):
+        return cls.types[type_](name, category)
+
+
+
 # основной интерфейс проекта
 class Engine:
     def __init__(self):
         self.flowers = []
+        self.buyers = []
         self.bouquets = []
         self.categories = []
 
     @staticmethod
-    def create_user(type_):
-        return UserFactory.create(type_)
+    def create_user(type_, name):
+        return UserFactory.create(type_, name)
 
     @staticmethod
     def create_category(name, category=None):
@@ -110,6 +135,11 @@ class Engine:
             if item.name == name:
                 return item
         return None
+
+    def get_buyer(self, name) -> Buyer:
+        for item in self.buyers:
+            if item.name == name:
+                return item
 
     @staticmethod
     def decode_value(val):
@@ -140,9 +170,10 @@ class SingletonByName(type):
 
 class Logger(metaclass=SingletonByName):
 
-    def __init__(self, name):
+    def __init__(self, name, writer=FileWriter()):
         self.name = name
+        self.writer = writer
 
-    @staticmethod
-    def log(text):
-        print('log--->', text)
+    def log(self, text):
+        text = f'log---> {text}'
+        self.writer.write(text)
